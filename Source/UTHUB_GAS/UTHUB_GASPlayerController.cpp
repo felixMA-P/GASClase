@@ -130,13 +130,5 @@ void AUTHUB_GASPlayerController::OnTouchReleased()
 void AUTHUB_GASPlayerController::PerformFirstAbility()
 {
 
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn)
-	{
-		if (AUTHUB_GASCharacter* Character = Cast<AUTHUB_GASCharacter>(ControlledPawn))
-		{
-			Character->
-		}
-	}
 	
 }

@@ -64,7 +64,7 @@ UAbilitySystemComponent* AUTHUB_GASCharacter::GetAbilitySystemComponent() const
 
 void AUTHUB_GASCharacter::PerformFirstAttack()
 {
-	CharacterAttributes->PrimaryAttack->GetDefaultObject()->Attack();
+	
 }
 
 void AUTHUB_GASCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -108,5 +108,13 @@ void AUTHUB_GASCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	FGameplayTagContainer TagContainer;
+	GetOwnedGameplayTags(TagContainer);
+
+	if (TagContainer.HasTag(FGameplayStatesManager::Get().Tag_InteractContagious) && TagContainer.HasTag(FGameplayStatesManager::Get().Tag_InteractInfected))
+	{
+		TryInfect();
+	}
+	
 	InitializeCharacter();
 }

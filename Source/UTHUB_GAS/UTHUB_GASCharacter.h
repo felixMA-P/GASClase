@@ -31,8 +31,6 @@ struct FCharacterAttributes: public FTableRowBase
 	UPROPERTY(EditAnywhere)
 	UAnimMontage* AttackAnimation;
 
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UBaseAttack>* PrimaryAttack;
 };
 
 
@@ -91,11 +89,11 @@ private:
 	
 	void InitializeCharacter();
 
-	
+
 protected:
 	virtual void BeginPlay() override;
-
 	
-	
+	UFUNCTION(BlueprintImplementableEvent, Category="GameplayTags")
+	void TryInfect();
 };
 

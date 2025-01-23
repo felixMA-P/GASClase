@@ -2,6 +2,8 @@
 #include "GameplayTagContainer.h"
 #include "GameplayTagsManager.h"
 
+#define DEFINE_NATIVE_GAMEPLAY_TAG(TagVariable, TagName) \
+TagVariable = UGameplayTagsManager::Get().AddNativeGameplayTag(TEXT(TagName));
 
 class FGameplayStatesManager : public FNoncopyable
 {
@@ -22,11 +24,17 @@ public:
 
 	void InitGameplayTags()
 	{
-		Tag_InteractEnable = UGameplayTagsManager::Get().AddNativeGameplayTag(TEXT("GameStates.CanInteract"));
+		DEFINE_NATIVE_GAMEPLAY_TAG(Tag_InteractEnable, "GameStates.CanInteract");
+		DEFINE_NATIVE_GAMEPLAY_TAG(Tag_InteractEnable, "Status.Healthy");
+		DEFINE_NATIVE_GAMEPLAY_TAG(Tag_InteractEnable, "Status.Contagious");
+		DEFINE_NATIVE_GAMEPLAY_TAG(Tag_InteractEnable, "Status.Infected");
 	}
 
 public:
 	
 	FGameplayTag Tag_InteractEnable;
+	FGameplayTag Tag_InteractHealthy;
+	FGameplayTag Tag_InteractContagious;
+	FGameplayTag Tag_InteractInfected;
 	
 };
