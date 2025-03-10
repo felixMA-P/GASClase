@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "GameplayTagContainer.h"
 #include "GameFramework/GameModeBase.h"
 #include "UTHUB_GASGameMode.generated.h"
 
@@ -13,6 +14,12 @@ class AUTHUB_GASGameMode : public AGameModeBase
 
 public:
 	AUTHUB_GASGameMode();
+
+	void CharacterIsAllowedToInteract(FGameplayTag GameplayTag, int I);
+	virtual void HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer) override;
+
+private:
+	TArray<class UGameStates*> GameStateses;
 };
 
 

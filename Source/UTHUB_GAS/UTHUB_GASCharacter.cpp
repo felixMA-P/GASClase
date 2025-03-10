@@ -2,6 +2,7 @@
 
 #include "UTHUB_GASCharacter.h"
 
+#include "CoreAttributeSet.h"
 #include "CustomAbilitySystemComponent.h"
 #include "GameplayStatesManager.h"
 #include "Attack/BaseAttack.h"
@@ -10,6 +11,8 @@
 #include "Camera/CameraComponent.h"
 #include "Components/DecalComponent.h"
 #include "Components/CapsuleComponent.h"
+#include "DataDriven/GameplayAttributeEffector.h"
+#include "DataDriven/GASDataComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/PlayerController.h"
 #include "GameFramework/SpringArmComponent.h"
@@ -50,6 +53,10 @@ AUTHUB_GASCharacter::AUTHUB_GASCharacter()
 	PrimaryActorTick.bStartWithTickEnabled = true;
 
 	AbilityComponent = CreateDefaultSubobject<UCustomAbilitySystemComponent>(TEXT("AbilityComponent"));
+
+	CoreAttributes = CreateDefaultSubobject<UCoreAttributeSet>(TEXT("CoreAttributes"));
+
+	GASDataComponent = CreateDefaultSubobject<UGASDataComponent>(TEXT("GASData"));
 }
 
 void AUTHUB_GASCharacter::Tick(float DeltaSeconds)
@@ -62,9 +69,9 @@ UAbilitySystemComponent* AUTHUB_GASCharacter::GetAbilitySystemComponent() const
 	return AbilityComponent;
 }
 
-void AUTHUB_GASCharacter::PerformFirstAttack()
+void AUTHUB_GASCharacter::PerformFirstAttack() const
 {
-	CharacterAttributes->PrimaryAttack->GetDefaultObject()->Attack();
+	CharacterAttributes->PrimaryAttack->GetDefaultObject<UBaseAttack>()->Attack();
 }
 
 void AUTHUB_GASCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
@@ -80,6 +87,26 @@ void AUTHUB_GASCharacter::AddTag(const FGameplayTag& InTag)
 void AUTHUB_GASCharacter::RemoveTag(const FGameplayTag& InTag)
 {
 	GameplayStatesTags.RemoveTag(InTag);
+}
+
+void AUTHUB_GASCharacter::ApplyGameplayEffect()
+{
+	AbilityComponent->ApplyGameplayEffect(SampleEffect);
+}
+
+void AUTHUB_GASCharacter::SetUpAttributeCallBacks()
+{
+	if(GASDataComponent)
+	{
+		for(auto [Attribute, EffectorClass] : GASDataComponent->AttributeEffectors)
+		{
+			auto & Delegate = AbilityComponent->GetGameplayAttributeValueChangeDelegate(Attribute);
+
+			UGameplayAttributeEffector* Effector = EffectorClass->GetDefaultObject<UGameplayAttributeEffector>();
+			
+			Delegate.AddUObject(Effector, &UGameplayAttributeEffector::ApplyAttributeEffector);
+		}
+	}
 }
 
 void AUTHUB_GASCharacter::InitializeCharacter()
@@ -100,13 +127,25 @@ void AUTHUB_GASCharacter::InitializeCharacter()
 			if (Attr) CharacterAttributes = *Attr;
 			
 		}
-		
 	}
 }
 
 void AUTHUB_GASCharacter::BeginPlay()
 {
+	SetUpAttributeCallBacks();
 	Super::BeginPlay();
+	
+}
 
-	InitializeCharacter();
+void AUTHUB_GASCharacter::PostInitializeComponents()
+{
+	Super::PostInitializeComponents();
+	
+}
+
+void AUTHUB_GASCharacter::PreInitializeComponents()
+{
+	Super::PreInitializeComponents();
+
+	
 }

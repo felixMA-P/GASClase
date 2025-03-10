@@ -9,6 +9,7 @@
 #include "GameplayTagContainer.h"
 #include "UTHUB_GASCharacter.generated.h"
 
+class UCoreAttributeSet;
 class UBaseAttack;
 
 USTRUCT(BlueprintType)
@@ -32,7 +33,7 @@ struct FCharacterAttributes: public FTableRowBase
 	UAnimMontage* AttackAnimation;
 
 	UPROPERTY(EditAnywhere)
-	TSubclassOf<UBaseAttack>* PrimaryAttack;
+	TSubclassOf<UBaseAttack> PrimaryAttack;
 };
 
 
@@ -61,12 +62,16 @@ public:
 	FGameplayTagContainer GameplayStatesTags;
 
 	UFUNCTION()
-	void PerformFirstAttack();
+	void PerformFirstAttack() const;
 
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	virtual void AddTag(const FGameplayTag& InTag) override;
 	virtual void RemoveTag(const FGameplayTag& InTag) override;
-	
+
+	UFUNCTION(CallInEditor)
+	void ApplyGameplayEffect();
+
+	virtual void SetUpAttributeCallBacks();
 
 private:
 	/** Top down camera */
@@ -80,6 +85,9 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Ability, meta = (AllowPrivateAccess = "true"))
 	class UCustomAbilitySystemComponent* AbilityComponent;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Ability, meta = (AllowPrivateAccess = "true"))
+	TSubclassOf<UGameplayEffect> SampleEffect;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GameplayTags", Meta = (AllowPrivateAccess = "true"))
 	FGameplayTag CharacterClassTag;
 
@@ -91,9 +99,19 @@ private:
 	
 	void InitializeCharacter();
 
+	UPROPERTY()
+	UCoreAttributeSet*  CoreAttributes;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attributes", Meta = (AllowPrivateAccess = "true"))
+	class UGASDataComponent* GASDataComponent;
+
 	
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void PostInitializeComponents() override;
+
+	virtual void PreInitializeComponents() override;
 
 	
 	

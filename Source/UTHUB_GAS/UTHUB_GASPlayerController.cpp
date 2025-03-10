@@ -10,6 +10,8 @@
 #include "EnhancedInputComponent.h"
 #include "InputActionValue.h"
 #include "EnhancedInputSubsystems.h"
+#include "DataDriven/GASDataComponent.h"
+#include "DataDriven/InputAbilityMapping.h"
 #include "Engine/LocalPlayer.h"
 
 DEFINE_LOG_CATEGORY(LogTemplateCharacter);
@@ -27,6 +29,8 @@ void AUTHUB_GASPlayerController::BeginPlay()
 	// Call the base class  
 	Super::BeginPlay();
 }
+
+
 
 void AUTHUB_GASPlayerController::SetupInputComponent()
 {
@@ -53,15 +57,46 @@ void AUTHUB_GASPlayerController::SetupInputComponent()
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Triggered, this, &AUTHUB_GASPlayerController::OnTouchTriggered);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Completed, this, &AUTHUB_GASPlayerController::OnTouchReleased);
 		EnhancedInputComponent->BindAction(SetDestinationTouchAction, ETriggerEvent::Canceled, this, &AUTHUB_GASPlayerController::OnTouchReleased);
-
-		//Set up abilities input events
-		EnhancedInputComponent->BindAction(AbilityOneAction, ETriggerEvent::Started, this, &AUTHUB_GASPlayerController::PerformFirstAbility);
+		
 	}
 	else
 	{
 		UE_LOG(LogTemplateCharacter, Error, TEXT("'%s' Failed to find an Enhanced Input Component! This template is built to use the Enhanced Input system. If you intend to use the legacy system, then you will need to update this C++ file."), *GetNameSafe(this));
 	}
+
+	
 }
+
+
+void AUTHUB_GASPlayerController::OnPossess(APawn* InPawn)
+{
+	Super::OnPossess(InPawn);
+	UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent);
+	UCustomAbilitySystemComponent* CASC = GetPawn()->FindComponentByClass<UCustomAbilitySystemComponent>();
+	const UGASDataComponent* DataComponent = GetPawn()->FindComponentByClass<UGASDataComponent>();
+	if (EnhancedInputComponent && CASC && DataComponent)
+	{
+		for (const TPair<UInputAction*, TSubclassOf<UGameplayAbility>>& PairMapping : DataComponent->InputAbilityMapping->InputMappings)
+		{
+			CASC->AddAbilityFromClass(PairMapping.Value);
+			EnhancedInputComponent->BindAction(PairMapping.Key, ETriggerEvent::Triggered, this, &ThisClass::ExecuteAbility);
+		}
+	}
+}
+
+void AUTHUB_GASPlayerController::ExecuteAbility(const FInputActionInstance& Inst)
+{
+	const UGASDataComponent* DataComponent = GetPawn()->FindComponentByClass<UGASDataComponent>();
+
+	UCustomAbilitySystemComponent* CASC = GetPawn()->FindComponentByClass<UCustomAbilitySystemComponent>();
+	
+	if (DataComponent && DataComponent->InputAbilityMapping && CASC)
+	{
+		CASC->TryActivateAbilityByClass(*DataComponent->InputAbilityMapping->InputMappings.Find(Inst.GetSourceAction()));
+	}
+}
+
+
 
 void AUTHUB_GASPlayerController::OnInputStarted()
 {
@@ -130,13 +165,15 @@ void AUTHUB_GASPlayerController::OnTouchReleased()
 void AUTHUB_GASPlayerController::PerformFirstAbility()
 {
 
-	APawn* ControlledPawn = GetPawn();
-	if (ControlledPawn)
-	{
-		if (AUTHUB_GASCharacter* Character = Cast<AUTHUB_GASCharacter>(ControlledPawn))
-		{
-			Character->
-		}
-	}
+	// APawn* ControlledPawn = GetPawn();
+	// if (ControlledPawn)
+	// {
+	// 	if (AUTHUB_GASCharacter* Character = Cast<AUTHUB_GASCharacter>(ControlledPawn))
+	// 	{
+	// 		Character->PerformFirstAttack();
+	// 	}
+	// }
 	
 }
+
+

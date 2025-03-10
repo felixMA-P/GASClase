@@ -31,13 +31,27 @@ class UTHUB_GAS_API UCustomAbilitySystemComponent : public UAbilitySystemCompone
 
 public:
 	UCustomAbilitySystemComponent();
+	
+	void InitializeAttr(const AActor* InOwnerActor) const;
 
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
+
+	void AddAbilityFromClass(const TSubclassOf<UGameplayAbility>& AbilityClass);
 
 protected:
 	virtual void BeginPlay() override;
 
+	void InitializeAttributtesFromEffects();
+
 public:
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType,
 	                           FActorComponentTickFunction* ThisTickFunction) override;
+
+	UFUNCTION(BlueprintCallable, category = Gameplay)
+	FActiveGameplayEffectHandle ApplyGameplayEffect(const TSubclassOf<UGameplayEffect>& EffectClass);
+
+private:
+	template <typename T>
+	T* GetAttributeSetFromOwner() const;
+
 };

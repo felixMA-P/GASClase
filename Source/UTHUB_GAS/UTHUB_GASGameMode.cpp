@@ -1,6 +1,8 @@
 // Copyright Epic Games, Inc. All Rights Reserved.
 
 #include "UTHUB_GASGameMode.h"
+
+#include "GameplayStatesManager.h"
 #include "UTHUB_GASPlayerController.h"
 #include "UTHUB_GASCharacter.h"
 #include "UObject/ConstructorHelpers.h"
@@ -23,4 +25,25 @@ AUTHUB_GASGameMode::AUTHUB_GASGameMode()
 	{
 		PlayerControllerClass = PlayerControllerBPClass.Class;
 	}
+}
+
+void AUTHUB_GASGameMode::CharacterIsAllowedToInteract(FGameplayTag GameplayTag, int I)
+{
+}
+
+void AUTHUB_GASGameMode::HandleStartingNewPlayer_Implementation(APlayerController* NewPlayer)
+{
+	Super::HandleStartingNewPlayer_Implementation(NewPlayer);
+	APawn* Pawn = NewPlayer->GetPawn();
+	ensureMsgf(Pawn, TEXT("%s We dont have a proper pawn initialized yet"), ANSI_TO_TCHAR(__FUNCTION__));
+	
+	UCustomAbilitySystemComponent* ASC = Pawn->FindComponentByClass<UCustomAbilitySystemComponent>();
+	if (ASC)
+	{
+		auto & Delegate = ASC->RegisterGameplayTagEvent(FGameplayStatesManager::Get().Tag_InteractEnable);
+		Delegate.AddUObject(this, &ThisClass::CharacterIsAllowedToInteract);
+	}
+	
+	
+	
 }

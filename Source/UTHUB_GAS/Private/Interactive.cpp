@@ -12,22 +12,33 @@ AInteractive::AInteractive()
 
 void AInteractive::CheckTagCondition(AActor* TagOwner)
 {
-	if (IGameplayTagAssetInterface* TagAssetInterface = Cast<IGameplayTagAssetInterface>(TagOwner))
+
+	if (UCustomAbilitySystemComponent* CASC = TagOwner->FindComponentByClass<UCustomAbilitySystemComponent>())
 	{
-
 		FGameplayTagContainer CharacterTag;
-		TagAssetInterface->GetOwnedGameplayTags(CharacterTag);
+		CASC->GetOwnedGameplayTags(CharacterTag);
 
-		//FGameplayTag InteractiveTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.States.CanInteract"));
 		FGameplayTag InteractiveTag = FGameplayStatesManager::Get().Tag_InteractEnable;
-		
 		if (!CharacterTag.HasTag(InteractiveTag)) return;
-
-		if (!CharacterTag.HasTag(ConditionTag))
-		{
-			ExecuteAction();
-		}
 	}
+
+	
+	// if (IGameplayTagAssetInterface* TagAssetInterface = Cast<IGameplayTagAssetInterface>(TagOwner))
+	// {
+	//
+	// 	FGameplayTagContainer CharacterTag;
+	// 	TagAssetInterface->GetOwnedGameplayTags(CharacterTag);
+	//
+	// 	//FGameplayTag InteractiveTag = FGameplayTag::RequestGameplayTag(TEXT("Gameplay.States.CanInteract"));
+	// 	FGameplayTag InteractiveTag = FGameplayStatesManager::Get().Tag_InteractEnable;
+	// 	
+	// 	if (!CharacterTag.HasTag(InteractiveTag)) return;
+	//
+	// 	if (!CharacterTag.HasTag(ConditionTag))
+	// 	{
+	// 		ExecuteAction();
+	// 	}
+	// }
 	
 }
 
