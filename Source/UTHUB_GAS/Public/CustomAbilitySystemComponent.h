@@ -31,8 +31,6 @@ class UTHUB_GAS_API UCustomAbilitySystemComponent : public UAbilitySystemCompone
 
 public:
 	UCustomAbilitySystemComponent();
-	
-	void InitializeAttr(const AActor* InOwnerActor) const;
 
 	virtual void InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor) override;
 

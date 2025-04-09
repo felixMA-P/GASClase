@@ -5,7 +5,6 @@
 #include "CoreAttributeSet.h"
 #include "CustomAbilitySystemComponent.h"
 #include "GameplayStatesManager.h"
-#include "Attack/BaseAttack.h"
 #include "BehaviorTree/BehaviorTreeTypes.h"
 #include "UObject/ConstructorHelpers.h"
 #include "Camera/CameraComponent.h"
@@ -69,11 +68,6 @@ UAbilitySystemComponent* AUTHUB_GASCharacter::GetAbilitySystemComponent() const
 	return AbilityComponent;
 }
 
-void AUTHUB_GASCharacter::PerformFirstAttack() const
-{
-	CharacterAttributes->PrimaryAttack->GetDefaultObject<UBaseAttack>()->Attack();
-}
-
 void AUTHUB_GASCharacter::GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const
 {
 	TagContainer = GameplayStatesTags;
@@ -100,35 +94,20 @@ void AUTHUB_GASCharacter::SetUpAttributeCallBacks()
 	{
 		for(auto [Attribute, EffectorClass] : GASDataComponent->AttributeEffectors)
 		{
+			
+			ensureMsgf(EffectorClass, TEXT("One Attribute Effector in the CharacterComponent GASData Component is missing"));
+			
 			auto & Delegate = AbilityComponent->GetGameplayAttributeValueChangeDelegate(Attribute);
 
-			UGameplayAttributeEffector* Effector = EffectorClass->GetDefaultObject<UGameplayAttributeEffector>();
-			
-			Delegate.AddUObject(Effector, &UGameplayAttributeEffector::ApplyAttributeEffector);
-		}
-	}
-}
-
-void AUTHUB_GASCharacter::InitializeCharacter()
-{
-	if (CharacterData)
-	{
-		TArray<FCharacterAttributes*> OutData;
-		
-		CharacterData->GetAllRows(TEXT(""), OutData);
-
-		if (!OutData.IsEmpty())
-		{
-			FCharacterAttributes** Attr = OutData.FindByPredicate([this](FCharacterAttributes* Row)
+			if (EffectorClass)
 			{
-				return Row->GameplayClassTag.MatchesTag(CharacterClassTag);
-			});
-
-			if (Attr) CharacterAttributes = *Attr;
-			
+				UGameplayAttributeEffector* Effector = EffectorClass->GetDefaultObject<UGameplayAttributeEffector>();
+				Delegate.AddUObject(Effector, &UGameplayAttributeEffector::ApplyAttributeEffector);
+			}
 		}
 	}
 }
+
 
 void AUTHUB_GASCharacter::BeginPlay()
 {

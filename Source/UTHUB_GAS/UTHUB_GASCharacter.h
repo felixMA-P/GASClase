@@ -9,33 +9,8 @@
 #include "GameplayTagContainer.h"
 #include "UTHUB_GASCharacter.generated.h"
 
+
 class UCoreAttributeSet;
-class UBaseAttack;
-
-USTRUCT(BlueprintType)
-struct FCharacterAttributes: public FTableRowBase
-{
-	GENERATED_BODY()
-	
-	UPROPERTY(EditAnywhere)
-	FGameplayTag GameplayClassTag;
-	
-	UPROPERTY(EditAnywhere)
-	float Health;
-	
-	UPROPERTY(EditAnywhere)
-	float AttackStrength;
-	
-	UPROPERTY(EditAnywhere)
-	float Speed;
-	
-	UPROPERTY(EditAnywhere)
-	UAnimMontage* AttackAnimation;
-
-	UPROPERTY(EditAnywhere)
-	TSubclassOf<UBaseAttack> PrimaryAttack;
-};
-
 
 UCLASS(Blueprintable)
 class AUTHUB_GASCharacter : public ACharacter, public IAbilitySystemInterface, public IGameplayTagCustomInterface
@@ -60,9 +35,6 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GameplayTags")
 	FGameplayTagContainer GameplayStatesTags;
-
-	UFUNCTION()
-	void PerformFirstAttack() const;
 
 	virtual void GetOwnedGameplayTags(FGameplayTagContainer& TagContainer) const override;
 	virtual void AddTag(const FGameplayTag& InTag) override;
@@ -91,20 +63,14 @@ private:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="GameplayTags", Meta = (AllowPrivateAccess = "true"))
 	FGameplayTag CharacterClassTag;
 
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attributes", Meta = (AllowPrivateAccess = "true"))
-	FCharacterAttributes* CharacterAttributes;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attributes", Meta = (AllowPrivateAccess = "true"))
 	UDataTable* CharacterData;
 	
-	void InitializeCharacter();
-
 	UPROPERTY()
 	UCoreAttributeSet*  CoreAttributes;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Attributes", Meta = (AllowPrivateAccess = "true"))
 	class UGASDataComponent* GASDataComponent;
-
 	
 protected:
 	virtual void BeginPlay() override;

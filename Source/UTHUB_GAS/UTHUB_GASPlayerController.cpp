@@ -79,7 +79,7 @@ void AUTHUB_GASPlayerController::OnPossess(APawn* InPawn)
 		for (const TPair<UInputAction*, TSubclassOf<UGameplayAbility>>& PairMapping : DataComponent->InputAbilityMapping->InputMappings)
 		{
 			CASC->AddAbilityFromClass(PairMapping.Value);
-			EnhancedInputComponent->BindAction(PairMapping.Key, ETriggerEvent::Triggered, this, &ThisClass::ExecuteAbility);
+			EnhancedInputComponent->BindAction(PairMapping.Key, ETriggerEvent::Started, this, &ThisClass::ExecuteAbility);
 		}
 	}
 }
@@ -95,7 +95,6 @@ void AUTHUB_GASPlayerController::ExecuteAbility(const FInputActionInstance& Inst
 		CASC->TryActivateAbilityByClass(*DataComponent->InputAbilityMapping->InputMappings.Find(Inst.GetSourceAction()));
 	}
 }
-
 
 
 void AUTHUB_GASPlayerController::OnInputStarted()

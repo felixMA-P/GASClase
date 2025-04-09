@@ -31,31 +31,6 @@ T* UCustomAbilitySystemComponent::GetAttributeSetFromOwner() const
 	return Cast<T>(*AttrSet);
 }
 
-void UCustomAbilitySystemComponent::InitializeAttr(const AActor* InOwnerActor) const
-{
-
-	if (UAttributeSet* CoreAttributes = GetAttributeSetFromOwner<UAttributeSet>())
-	{
-		if (UGASDataComponent* DataComponent = InOwnerActor->FindComponentByClass<UGASDataComponent>())
-		{
-			if (DataComponent->DT_CoreStats)
-			{
-
-				auto InitializeAtt =[this, CoreAttributes](const FName& RowName, const FCoreAttributtes& Row)
-				{
-					// const UCoreAttributeSet* CoreSet = GetSet<UCoreAttributeSet>();
-				
-					float  RowNewValue = Row.AttributeBaseValue;
-					Row.Attribute.SetNumericValueChecked(RowNewValue, CoreAttributes);
-				
-				};
-			
-				DataComponent->DT_CoreStats->ForeachRow<FCoreAttributtes>(TEXT(""), InitializeAtt);
-			}
-		}
-	}
-}
-
 void UCustomAbilitySystemComponent::InitAbilityActorInfo(AActor* InOwnerActor, AActor* InAvatarActor)
 {
 	Super::InitAbilityActorInfo(InOwnerActor, InAvatarActor);
@@ -82,9 +57,11 @@ void UCustomAbilitySystemComponent::TickComponent(float DeltaTime, ELevelTick Ti
 
 FActiveGameplayEffectHandle UCustomAbilitySystemComponent::ApplyGameplayEffect(const TSubclassOf<UGameplayEffect>& EffectClass)
 {
+	check(EffectClass);
+	
 	FGameplayEffectContextHandle EffectContextHandle = MakeEffectContext();
 	EffectContextHandle.AddSourceObject(this);
-		
+	
 	const FGameplayEffectSpecHandle Spec = MakeOutgoingSpec(EffectClass, 1, EffectContextHandle);
 
 	return ApplyGameplayEffectSpecToSelf(*Spec.Data.Get());
@@ -95,8 +72,7 @@ void UCustomAbilitySystemComponent::InitializeAttributtesFromEffects()
 
 	if (UGASDataComponent* DataComponent = GetOwner()->FindComponentByClass<UGASDataComponent>())
 	{
-
-		for (const TSubclassOf<UGameplayEffect> & EffectClass : DataComponent->AttributeInitializers)
+		for (const TSubclassOf<UGameplayEffect>& EffectClass : DataComponent->AttributeInitializers)
 		{
 			ApplyGameplayEffect(EffectClass);
 		}

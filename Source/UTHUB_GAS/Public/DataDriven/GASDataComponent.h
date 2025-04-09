@@ -22,9 +22,6 @@ public:
 	UGASDataComponent();
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Data", Meta = (AllowPrivateAccess = "true"))
-	UDataTable* DT_CoreStats;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Data", Meta = (AllowPrivateAccess = "true"))
 	TArray<TSubclassOf<class UGameplayEffect>> AttributeInitializers;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Data", Meta = (AllowPrivateAccess = "true"))
@@ -32,10 +29,8 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category="Data")
 	UInputAbilityMapping* InputAbilityMapping;
-	
 protected:
 	virtual void BeginPlay() override;
-
 	
 
 public:
