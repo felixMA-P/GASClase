@@ -36,23 +36,7 @@ void UCustomAbilitySystemComponent::InitializeAttr(const AActor* InOwnerActor) c
 
 	if (UAttributeSet* CoreAttributes = GetAttributeSetFromOwner<UAttributeSet>())
 	{
-		if (UGASDataComponent* DataComponent = InOwnerActor->FindComponentByClass<UGASDataComponent>())
-		{
-			if (DataComponent->DT_CoreStats)
-			{
-
-				auto InitializeAtt =[this, CoreAttributes](const FName& RowName, const FCoreAttributtes& Row)
-				{
-					// const UCoreAttributeSet* CoreSet = GetSet<UCoreAttributeSet>();
-				
-					float  RowNewValue = Row.AttributeBaseValue;
-					Row.Attribute.SetNumericValueChecked(RowNewValue, CoreAttributes);
-				
-				};
-			
-				DataComponent->DT_CoreStats->ForeachRow<FCoreAttributtes>(TEXT(""), InitializeAtt);
-			}
-		}
+		
 	}
 }
 
